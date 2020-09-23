@@ -6,10 +6,7 @@ import 'package:mapas_app/pages/mapa_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../helpers/helpers.dart';
-import '../helpers/helpers.dart';
-import '../helpers/helpers.dart';
 import 'acceso_gps_page.dart';
-import 'mapa_page.dart';
 import 'mapa_page.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -47,14 +44,10 @@ class _LoadingPageState extends State<LoadingPage> with WidgetsBindingObserver {
       body: FutureBuilder(
         future: this.checkGpsLocation(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.data) {
-            return Center(
-              child: Text(snapshot.data),
-            );
+          if (snapshot.hasData) {
+            return Center(child: Text(snapshot.data));
           } else {
-            return CircularProgressIndicator(
-              strokeWidth: 2,
-            );
+            return Center(child: CircularProgressIndicator(strokeWidth: 2));
           }
         },
       ),
