@@ -33,6 +33,8 @@ class _MapaPageState extends State<MapaPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           BtnUbicacion(),
+          BtnSeguirUbicacion(),
+          BtnMiRuta(),
         ],
       ),
     );
@@ -45,6 +47,8 @@ class _MapaPageState extends State<MapaPage> {
     // ignore: close_sinks
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
 
+    mapaBloc.add(OnNuevaUbicacion(state.ubicacion));
+
     final cameraPosition =
         new CameraPosition(target: state.ubicacion, zoom: 15);
 
@@ -54,6 +58,7 @@ class _MapaPageState extends State<MapaPage> {
       myLocationEnabled: true,
       zoomControlsEnabled: false,
       onMapCreated: mapaBloc.initMapa,
+      polylines: mapaBloc.state.polylines.values.toSet(),
     );
   }
 }
