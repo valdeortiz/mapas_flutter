@@ -27,8 +27,15 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-          builder: (_, state) => crearMapa(state)),
+      body: Stack(
+        children: [
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+            builder: (_, state) => crearMapa(state),
+          ),
+          Positioned(top: 10, child: SearchBar()),
+          MarcadorManual(),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -59,6 +66,11 @@ class _MapaPageState extends State<MapaPage> {
       zoomControlsEnabled: false,
       onMapCreated: mapaBloc.initMapa,
       polylines: mapaBloc.state.polylines.values.toSet(),
+      onCameraMove: (cameraPosition) {
+        // cameraPosition.target es la posicion central del mapa
+        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+      },
+      // onCameraIdle: ,  Se ejecuta cuando el mapa se deja de mover
     );
   }
 }

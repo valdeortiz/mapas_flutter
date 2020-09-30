@@ -33,6 +33,7 @@ dependencies:
   flutter_bloc: ^6.0.5
   google_maps_flutter: ^0.5.32
   dio: ^3.0.10
+  polyline: ^1.0.2
   animate_do: ^1.7.3
 
 dev_dependencies:

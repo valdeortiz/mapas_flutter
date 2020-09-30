@@ -21,6 +21,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       'mi_ruta',
     ),
     width: 4,
+    color: Colors.transparent,
   );
 
   void initMapa(GoogleMapController controller) {
@@ -48,6 +49,8 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       yield* this._onMarcarRecorrido(event);
     } else if (event is OnSeguirUbicacion) {
       yield* this._onSeguirUbicacion(event);
+    } else if (event is OnMovioMapa) {
+      yield state.copyWith(ubicacionCentral: event.centroMapa);
     }
   }
 
