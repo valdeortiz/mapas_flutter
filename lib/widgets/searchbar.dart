@@ -26,8 +26,11 @@ class SearchBar extends StatelessWidget {
         width: width,
         child: GestureDetector(
           onTap: () async {
+            final proximidad = context.bloc<MiUbicacionBloc>().state.ubicacion;
+            final historial = context.bloc<BusquedaBloc>().state.historial;
             final resultado = await showSearch(
-                context: context, delegate: SearchDestination());
+                context: context,
+                delegate: SearchDestination(proximidad, historial));
             this.retornoBusqueda(context, resultado);
           },
           child: Container(
@@ -51,7 +54,8 @@ class SearchBar extends StatelessWidget {
     );
   }
 
-  void retornoBusqueda(BuildContext context, SearchResult result) {
+  Future<void> retornoBusqueda(
+      BuildContext context, SearchResult result) async {
     if (result.cancelo) {
       return;
     }
@@ -59,5 +63,30 @@ class SearchBar extends StatelessWidget {
       context.bloc<BusquedaBloc>().add(OnActivarMarcadorManual());
       return;
     }
+
+    calculandoAlerta(context);
+
+    // calcular la ruta en base al valor: result
+    final trafficService = new TrafficService();
+    final mapaBloc = context.bloc<MapaBloc>();
+    final inicio = context.bloc<MiUbicacionBloc>().state.ubicacion;
+    final destino = result.position;
+    final drivingResponse =
+        await trafficService.getCoordsInicioYDestino(inicio, destino);
+    final geometry = drivingResponse.routes[0].geometry;
+    final duration = drivingResponse.routes[0].duration;
+    final distancia = drivingResponse.routes[0].distance;
+
+    final points = Poly.Polyline.Decode(encodedString: geometry, precision: 6);
+    final List<LatLng> rutaCoordenadas =
+        points.decodedCoords.map((e) => LatLng(e[0], e[1])).toList();
+
+    mapaBloc
+        .add(OnCrearRutaInicioDestino(rutaCoordenadas, distancia, duration));
+
+    Navigator.of(context).pop();
+
+    final busquedaBloc = context.bloc<BusquedaBloc>();
+    busquedaBloc.add(OnAgregarHistorial(result));
   }
 }
